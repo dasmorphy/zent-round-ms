@@ -1,0 +1,275 @@
+openapi: 3.0.3
+info:
+  title: zent-round-ms
+  description: Round microservice
+  version: 1.0.0
+servers:
+- url: /rest/zent-round-api/v1.0/
+paths:
+  /get/resume_graphs:
+    get:
+      tags:
+      - Reports
+      summary: Obtiene los porcentajes para graficos
+      description: Devuelve todos los porcentajes para graficos
+      operationId: get_resume_graphs
+      parameters:
+        - name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+            example: "2025-01-21T00:00:00"
+        - name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+            example: "2025-01-22T00:00:00"
+        - name: externalTransactionId
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "fcea920f7412b5da7be0cf42b8c93759"
+        - name: channel
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "ZENTINEL"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+        "503":
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+      x-openapi-router-controller: swagger_server.controllers.round_controller.RoundView
+  /round-register:
+    get:
+      tags:
+      - Rounds
+      summary: Obtiene todos los registros de rondas
+      description: Devuelve todos los registros de rondas de la base
+      operationId: get_rounds_register
+      parameters:
+      - name: user
+        in: header
+        required: false
+        schema:
+          type: string
+          example: "dmales"
+      - name: start_date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+          example: "2025-01-21T00:00:00"
+      - name: end_date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+          example: "2025-01-22T00:00:00"
+      - name: externalTransactionId
+        in: header
+        required: true
+        schema:
+          type: string
+          example: "fcea920f7412b5da7be0cf42b8c93759"
+      - name: channel
+        in: header
+        required: true
+        schema:
+          type: string
+          example: "ZENTINEL"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+        "503":
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+      x-openapi-router-controller: swagger_server.controllers.round_controller.RoundView
+    post:
+      tags:
+      - Rounds
+      summary: Guarda el registro de ronda en la base de datos.
+      description: Guardado de registro de ronda
+      operationId: post_round_register
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/RequestRoundRegister"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+        "503":
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+      x-openapi-router-controller: swagger_server.controllers.round_controller.RoundView
+components:
+  schemas:
+    GenericResponse:
+      properties:
+        data:
+          type: object
+          nullable: true
+          example: Estructura generica.
+        errorCode:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: Mensaje generico.
+        internalTransactionId:
+          type: string
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        externalTransactionId:
+          type: string
+          example: fcea920f7412b5da7be0cf42b8c93759
+      example:
+        errorCode: 0
+        internalTransactionId: d290f1ee-6c54-4b01-90e6-d701748f0851
+        externalTransactionId: fcea920f7412b5da7be0cf42b8c93759
+        message: Mensaje generico.
+        data: {}
+    ResponseError:
+      type: object
+      properties:
+        errorCode:
+          type: integer
+        internalTransactionId:
+          type: string
+        externalTransactionId:
+          type: string
+        message:
+          type: string
+    RequestGeneric:
+      properties:
+        channel:
+          type: string
+          example: ZENTINEL
+        externalTransactionId:
+          type: string
+          example: fcea920f7412b5da7be0cf42b8c9375
+    RequestRoundRegister:
+      properties:
+        round_register_data:
+          $ref: "#/components/schemas/RequestRoundRegisterData"
+        channel:
+          type: string
+          example: ZENTINEL
+        externalTransactionId:
+          type: string
+          example: fcea920f7412b5da7be0cf42b8c93759
+    RequestRoundRegisterData:
+      type: object
+      properties:
+        user:
+          type: string
+          example: "dmales"
+        lat:
+          type: string
+          example: -0.1865936
+        long:
+          type: string
+          example: -78.5953478
+        out_round:
+          type: boolean
+          nullable: true
+          example: true
+        round_id:
+          nullable: true
+          type: integer
+          example: 1
+        images:
+          nullable: true
+          maxItems: 10
+          type: array
+          items:
+            type: string
+            format: binary
+        observations:
+          type: string
+          nullable: true
+          example: N/A
