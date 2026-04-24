@@ -216,3 +216,13 @@ class RequestRoundRegisterData(Model):
         """
 
         self._observations = observations
+
+    @classmethod
+    def from_json(cls, data: Dict) -> "RequestRoundRegisterData":
+        obj = cls()
+
+        for attr, json_key in obj.attribute_map.items():
+            if json_key in data:
+                setattr(obj, attr, data[json_key])
+
+        return obj
