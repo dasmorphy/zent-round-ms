@@ -9,6 +9,10 @@ from werkzeug.utils import secure_filename
 
 from swagger_server.exception.custom_error_exception import CustomAPIException
 from swagger_server.models.db import Base
+from swagger_server.models.db.round_images import RoundImages
+from swagger_server.models.db.round_register import RoundRegister
+from swagger_server.models.db.rounds import Rounds
+from swagger_server.models.request_round_register_data import RequestRoundRegisterData
 from swagger_server.resources.databases.postgresql import PostgreSQLClient
 
 class RoundRepository:
@@ -18,44 +22,48 @@ class RoundRepository:
         # self.redis_client = RedisClient()
 
     
-    def post_dispatch(self, data: RequestDispatchDispatchData, images, internal, external):
+    def post_dispatch(self, data: RequestRoundRegisterData, images, internal, external):
         saved_files = []
 
         with self.db.session_factory() as session:
             try:
-                
-                dispatch_saved = self.saveDispatch(session, data, internal, external)
 
-                for sku in data.sku:
-                    new_sku = {
-                        "user": data.user,
-                        "type_sku": sku["type_sku"],
-                        "dispatch_id": dispatch_saved.id_dispatch
-                    }
-                    sku_saved = self.saveSku(session, new_sku, internal, external)
-                    for product in sku["products"]:
-                        self.saveProductSku(
-                            session,
-                            sku_saved.id_sku,
-                            product,
-                            internal,
-                            external
+                round_exists = session.execute(
+                    select(
+                            exists().where(
+                                Rounds.id_round == data.get("round_id")
+                            )
                         )
+                    ).scalar()
 
-                # Guardar imágenes (máx 10)
-                for file in images[:10]:
+                if data.get("round_id") and not round_exists:
+                    raise CustomAPIException("La ronda no existe", 404)
+                
+                round_register = RoundRegister(
+                    round_id=data.get("round_id"),
+                    lat=data.lat,
+                    long=data.long,
+                    observations=data.observations,
+                    out_round=data.out_round,
+                    created_by=data.user,
+                    status=data.get("status")
+                )
+                
+                session.add(round_register)
+                session.flush()
+
+                # Guardar imágenes (máx 3)
+                for file in images[:3]:
                     result = self.save_image(file)
                     saved_files.append(result["url"])
 
-                    image = DispatchImages(
-                        dispatch_id=dispatch_saved.id_dispatch,
+                    image = RoundImages(
+                        round_id=round_register.id_round_register,
                         image_path=result["url"],
-                        process="save_dispatch"
                     )
 
                     session.add(image)
 
-                # self.saveImages(session, images, internal, external)
                 session.commit()
 
             except OSError as e:
@@ -80,3 +88,39 @@ class RoundRepository:
 
             finally:
                 session.close()
+
+    def save_image(self, file):
+        folder = "/var/www/uploads/rounds"
+        ALLOWED_EXTENSIONS = {"webp"}
+        MAX_FILENAME_LEN = 255
+        MAX_BASENAME_LEN = 50
+
+        if not file or file.filename == "":
+            raise ValueError("Archivo inválido")
+
+        if not os.path.exists(folder):
+            raise CustomAPIException(f"La carpeta root de imágenes no existe {getpass.getuser()} - {os.getuid()} - {os.geteuid()}", 404)
+        
+
+        if not os.access(folder, os.W_OK):
+            raise CustomAPIException(f"No hay permisos de escritura en la carpeta de imágenes {getpass.getuser()} - {os.getuid()} - {os.geteuid()}", 400)
+        
+        # ext = file.filename.rsplit(".", 1)[-1].lower()
+
+        # if ext not in ALLOWED_EXTENSIONS:
+        #     raise ValueError("Formato no permitido. Solo se acepta WEBP.")
+
+        original_name = secure_filename(file.filename)
+        base_name = os.path.splitext(original_name)[0][:MAX_BASENAME_LEN]
+
+        filename = f"{uuid4()}_{base_name}.webp"
+
+        if len(filename.encode("utf-8")) > MAX_FILENAME_LEN:
+            filename = f"{uuid4().hex}.webp"
+
+        path = os.path.join(folder, filename)
+        file.save(path)
+
+        return {
+            "url": f"/uploads/rounds/{filename}"
+        }

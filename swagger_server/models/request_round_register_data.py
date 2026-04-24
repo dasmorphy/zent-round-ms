@@ -14,7 +14,7 @@ class RequestRoundRegisterData(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, user: str=None, lat: str=None, long: str=None, out_round: bool=None, round_id: int=None, images: List[str]=None, observations: str=None):  # noqa: E501
+    def __init__(self, user: str=None, lat: str=None, long: str=None, out_round: bool=None, round_id: int=None, status: str=None, images: List[str]=None, observations: str=None):  # noqa: E501
         """RequestRoundRegisterData - a model defined in Swagger
 
         :param user: The user of this RequestRoundRegisterData.  # noqa: E501
@@ -27,6 +27,8 @@ class RequestRoundRegisterData(Model):
         :type out_round: bool
         :param round_id: The round_id of this RequestRoundRegisterData.  # noqa: E501
         :type round_id: int
+        :param status: The status of this RequestRoundRegisterData.  # noqa: E501
+        :type status: str
         :param images: The images of this RequestRoundRegisterData.  # noqa: E501
         :type images: List[str]
         :param observations: The observations of this RequestRoundRegisterData.  # noqa: E501
@@ -38,6 +40,7 @@ class RequestRoundRegisterData(Model):
             'long': str,
             'out_round': bool,
             'round_id': int,
+            'status': str,
             'images': List[str],
             'observations': str
         }
@@ -48,6 +51,7 @@ class RequestRoundRegisterData(Model):
             'long': 'long',
             'out_round': 'out_round',
             'round_id': 'round_id',
+            'status': 'status',
             'images': 'images',
             'observations': 'observations'
         }
@@ -56,6 +60,7 @@ class RequestRoundRegisterData(Model):
         self._long = long
         self._out_round = out_round
         self._round_id = round_id
+        self._status = status
         self._images = images
         self._observations = observations
 
@@ -174,6 +179,27 @@ class RequestRoundRegisterData(Model):
         """
 
         self._round_id = round_id
+
+    @property
+    def status(self) -> str:
+        """Gets the status of this RequestRoundRegisterData.
+
+
+        :return: The status of this RequestRoundRegisterData.
+        :rtype: str
+        """
+        return self._status
+
+    @status.setter
+    def status(self, status: str):
+        """Sets the status of this RequestRoundRegisterData.
+
+
+        :param status: The status of this RequestRoundRegisterData.
+        :type status: str
+        """
+
+        self._status = status
 
     @property
     def images(self) -> List[str]:
