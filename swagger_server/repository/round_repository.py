@@ -22,7 +22,7 @@ class RoundRepository:
         # self.redis_client = RedisClient()
 
     
-    def post_dispatch(self, data: RequestRoundRegisterData, images, internal, external):
+    def post_round_register(self, data: RequestRoundRegisterData, images, internal, external):
         saved_files = []
 
         with self.db.session_factory() as session:
