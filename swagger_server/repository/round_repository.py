@@ -27,16 +27,16 @@ class RoundRepository:
 
         with self.db.session_factory() as session:
             try:
-                round_exists = session.get(Rounds, data.get("round_id"))
+                round_exists = session.get(Rounds, data.round_id)
 
-                if data.get("round_id") and not round_exists:
+                if data.round_id and not round_exists:
                     raise CustomAPIException("La ronda no existe", 404)
-                elif data.get("round_id") and round_exists:
+                elif data.round_id and round_exists:
                     round_exists.status = "OK"
                     session.add(round_exists)
                 
                 round_register = RoundRegister(
-                    round_id=data.get("round_id"),
+                    round_id=data.round_id,
                     lat=data.lat,
                     long=data.long,
                     observations=data.observations,
