@@ -262,10 +262,6 @@ components:
           nullable: true
           type: integer
           example: 1
-        status:
-          type: string
-          nullable: true
-          example: OK
         images:
           nullable: true
           maxItems: 10
