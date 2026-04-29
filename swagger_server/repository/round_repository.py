@@ -12,6 +12,7 @@ from swagger_server.models.db import Base
 from swagger_server.models.db.round_images import RoundImages
 from swagger_server.models.db.round_register import RoundRegister
 from swagger_server.models.db.rounds import Rounds
+from swagger_server.models.db.sector_pool import SectorPool
 from swagger_server.models.request_round_register_data import RequestRoundRegisterData
 from swagger_server.resources.databases.postgresql import PostgreSQLClient
 
@@ -119,3 +120,26 @@ class RoundRepository:
         return {
             "url": f"/uploads/rounds/{filename}"
         }
+    
+    def get_sectors_pool(self, internal, external):
+        with self.db.session_factory() as session:
+            try:
+                result = session.execute(
+                    select(SectorPool)
+                )
+                sectors = [
+                    {
+                        "id_sector": c.id_sector,
+                        "name": c.name,
+                        "created_at": c.created_at,
+                        "updated_at": c.updated_at
+                    }
+                    for c in result.scalars().all()
+                ]
+                return sectors
+            except Exception as exception:
+                logger.error('Error: {}', str(exception), internal=internal, external=external)
+                if isinstance(exception, CustomAPIException):
+                    raise exception
+                
+                raise CustomAPIException("Error al obtener en la base de datos", 500)

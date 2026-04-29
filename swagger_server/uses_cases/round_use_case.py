@@ -15,3 +15,6 @@ class RoundUseCase:
         internal, external = internal_process
 
         self.round_repository.post_round_register(data, images, internal, external)
+
+    def get_sectors_pool(self, internal, external):
+        return self.round_repository.get_sectors_pool(internal, external)
