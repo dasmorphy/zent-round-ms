@@ -35,6 +35,11 @@ class RoundRepository:
                 elif data.round_id and round_exists:
                     round_exists.status = "OK"
                     session.add(round_exists)
+
+                sector_pool_exists = session.get(SectorPool, data.sector_pool_id)
+
+                if not sector_pool_exists:
+                    raise CustomAPIException("El sector no existe", 404)
                 
                 round_register = RoundRegister(
                     round_id=data.round_id,
@@ -42,6 +47,8 @@ class RoundRepository:
                     long=data.long,
                     observations=data.observations,
                     out_round=data.out_round,
+                    sector_pool_id=data.sector_pool_id,
+                    pool=data.pool,
                     created_by=data.user
                 )
                 

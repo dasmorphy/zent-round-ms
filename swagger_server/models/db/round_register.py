@@ -28,6 +28,12 @@ class RoundRegister(Base):
         ForeignKey('public.rounds.id_round', onupdate='NO ACTION', ondelete='NO ACTION'),
     )
 
+    sector_pool_id = Column(
+        Integer,
+        ForeignKey('public.sector_pool.id_sector', onupdate='NO ACTION', ondelete='NO ACTION'),
+    )
+
+    pool = Column(Text)
     out_round = Column(Boolean)
     observations = Column(DateTime)
 

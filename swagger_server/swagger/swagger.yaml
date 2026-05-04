@@ -314,6 +314,12 @@ components:
           nullable: true
           type: integer
           example: 1
+        sector_pool_id:
+          type: integer
+          example: 1
+        pool:
+          type: string
+          example: Piscina
         images:
           nullable: true
           maxItems: 10

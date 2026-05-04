@@ -14,7 +14,7 @@ class RequestRoundRegisterData(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, user: str=None, lat: str=None, long: str=None, out_round: bool=None, round_id: int=None, images: List[str]=None, observations: str=None):  # noqa: E501
+    def __init__(self, user: str=None, lat: str=None, long: str=None, out_round: bool=None, round_id: int=None, sector_pool_id: int=None, pool: str=None, images: List[str]=None, observations: str=None):  # noqa: E501
         """RequestRoundRegisterData - a model defined in Swagger
 
         :param user: The user of this RequestRoundRegisterData.  # noqa: E501
@@ -27,6 +27,10 @@ class RequestRoundRegisterData(Model):
         :type out_round: bool
         :param round_id: The round_id of this RequestRoundRegisterData.  # noqa: E501
         :type round_id: int
+        :param sector_pool_id: The sector_pool_id of this RequestRoundRegisterData.  # noqa: E501
+        :type sector_pool_id: int
+        :param pool: The pool of this RequestRoundRegisterData.  # noqa: E501
+        :type pool: str
         :param images: The images of this RequestRoundRegisterData.  # noqa: E501
         :type images: List[str]
         :param observations: The observations of this RequestRoundRegisterData.  # noqa: E501
@@ -38,6 +42,8 @@ class RequestRoundRegisterData(Model):
             'long': str,
             'out_round': bool,
             'round_id': int,
+            'sector_pool_id': int,
+            'pool': str,
             'images': List[str],
             'observations': str
         }
@@ -48,6 +54,8 @@ class RequestRoundRegisterData(Model):
             'long': 'long',
             'out_round': 'out_round',
             'round_id': 'round_id',
+            'sector_pool_id': 'sector_pool_id',
+            'pool': 'pool',
             'images': 'images',
             'observations': 'observations'
         }
@@ -56,6 +64,8 @@ class RequestRoundRegisterData(Model):
         self._long = long
         self._out_round = out_round
         self._round_id = round_id
+        self._sector_pool_id = sector_pool_id
+        self._pool = pool
         self._images = images
         self._observations = observations
 
@@ -176,6 +186,48 @@ class RequestRoundRegisterData(Model):
         self._round_id = round_id
 
     @property
+    def sector_pool_id(self) -> int:
+        """Gets the sector_pool_id of this RequestRoundRegisterData.
+
+
+        :return: The sector_pool_id of this RequestRoundRegisterData.
+        :rtype: int
+        """
+        return self._sector_pool_id
+
+    @sector_pool_id.setter
+    def sector_pool_id(self, sector_pool_id: int):
+        """Sets the sector_pool_id of this RequestRoundRegisterData.
+
+
+        :param sector_pool_id: The sector_pool_id of this RequestRoundRegisterData.
+        :type sector_pool_id: int
+        """
+
+        self._sector_pool_id = sector_pool_id
+
+    @property
+    def pool(self) -> str:
+        """Gets the pool of this RequestRoundRegisterData.
+
+
+        :return: The pool of this RequestRoundRegisterData.
+        :rtype: str
+        """
+        return self._pool
+
+    @pool.setter
+    def pool(self, pool: str):
+        """Sets the pool of this RequestRoundRegisterData.
+
+
+        :param pool: The pool of this RequestRoundRegisterData.
+        :type pool: str
+        """
+
+        self._pool = pool
+
+    @property
     def images(self) -> List[str]:
         """Gets the images of this RequestRoundRegisterData.
 
@@ -216,13 +268,3 @@ class RequestRoundRegisterData(Model):
         """
 
         self._observations = observations
-
-    @classmethod
-    def from_json(cls, data: Dict) -> "RequestRoundRegisterData":
-        obj = cls()
-
-        for attr, json_key in obj.attribute_map.items():
-            if json_key in data:
-                setattr(obj, attr, data[json_key])
-
-        return obj
