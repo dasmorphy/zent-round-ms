@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import getpass
 import json
 import os
@@ -150,3 +151,61 @@ class RoundRepository:
                     raise exception
                 
                 raise CustomAPIException("Error al obtener en la base de datos", 500)
+            
+    def get_registered_rounds(self, filtersBase, internal, external):
+        with self.db.session_factory() as session:
+            try:
+                stmt = (
+                    select(
+                        RoundRegister,
+                        SectorPool.name.label("name_sector"),
+                        func.coalesce(
+                            func.array_agg(RoundImages.image_path)
+                                .filter(RoundImages.image_path.isnot(None)),
+                            []
+                        ).label("images")
+                    )
+                    .outerjoin(
+                        SectorPool,
+                        SectorPool.id_sector == RoundRegister.sector_pool_id
+                    )
+                    .outerjoin(
+                        RoundImages,
+                        RoundImages.round_id == RoundRegister.id_round_register
+                    )
+                )
+
+                stmt = stmt.group_by(
+                    RoundRegister.id_round_register,
+                    SectorPool.name,
+                )
+
+                filters = []
+
+                last_30_days = datetime.now() - timedelta(days=30)
+
+                if not filtersBase.get("start_date") and not filtersBase.get("end_date"):
+                    filters.append(RoundRegister.created_at >= last_30_days)
+
+                if filtersBase.get("user"):
+                    filters.append(RoundRegister.created_by == filtersBase.get("user"))
+
+                if filtersBase.get("start_date"):
+                    filters.append(RoundRegister.created_at >= filtersBase.get("start_date"))
+
+                if filtersBase.get("end_date"):
+                    filters.append(RoundRegister.created_at <= filtersBase.get("end_date"))
+
+                if filters:
+                    stmt = stmt.where(and_(*filters))
+
+                result = session.execute(stmt).all()
+                return result
+
+            except Exception as exception:
+                logger.error('Error: {}', str(exception), internal=internal, external=external)
+                if isinstance(exception, CustomAPIException):
+                    raise exception
+                
+                raise CustomAPIException("Error al obtener en la base de datos", 500)
+                

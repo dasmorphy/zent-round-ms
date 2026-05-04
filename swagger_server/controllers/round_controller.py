@@ -92,9 +92,9 @@ class RoundView(MethodView):
                 message = f"start request: {function_name}, channel: {request.headers.get('channel')}"
                 logger.info(message, internal=internal_transaction_id, external=external_transaction_id)
                 headers = {k.lower(): v for k, v in request.headers.items()}
-                results = self.round_use_case.get_all_dispatch(headers, request.args, internal_transaction_id, external_transaction_id)
+                results = self.round_use_case.get_registered_rounds(headers, request.args, internal_transaction_id, external_transaction_id)
                 response["error_code"] = 0
-                response["message"] = "Despachos obtenidos correctamente"
+                response["message"] = "Registros de rondas obtenidas correctamente"
                 response["data"] = results
                 end_time = default_timer()
                 logger.info(f"Fin de la transacción, procesada en : {end_time - start_time} milisegundos",
